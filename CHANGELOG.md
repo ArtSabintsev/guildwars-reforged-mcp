@@ -6,6 +6,33 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `Keepalive` workflow: GitHub disables every scheduled workflow in a repository
+  that goes 60 consecutive days without commit activity, and only commits reset
+  that timer. Since the skill-index refresh commits only when the wiki data
+  actually changed, a quiet stretch would have silently disabled the refresh for
+  good. A weekly job now makes an empty commit once `main` has been quiet for 45
+  days, keeping the schedules alive without manual upkeep.
+
+### Changed
+
+- **BREAKING**: renamed to `guildwars-reforged-mcp` (package, `bin`, MCP server
+  identity, and GitHub repository). Guild Wars Reforged is the current name for
+  Guild Wars 1, so the old name was costing discoverability. GitHub redirects
+  the old repository URL, so existing `npx -y github:<owner>/guildwars1-mcp`
+  install lines keep resolving, but the installed package and binary are now
+  `guildwars-reforged-mcp`.
+- README, package description, and repository topics now lead with Guild Wars
+  Reforged and name all four campaigns.
+- Skill-index refresh moved from a daily to a weekly cron (Mondays 07:00 UTC),
+  matching the observed drift rate of one to three corrected skill fields per
+  week.
+- Skill-index refreshes no longer trigger a release. `release.yml` dropped its
+  `workflow_run` trigger; a corrected skill field does not merit a version, and
+  installs resolve `github:<owner>/<repo>` to the default branch, so a refresh
+  reaches users without one.
+
 ## [1.3.8] - 2026-07-21
 
 ### Changed

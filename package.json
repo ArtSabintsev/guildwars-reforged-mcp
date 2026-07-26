@@ -1,7 +1,7 @@
 {
-  "name": "guildwars1-mcp",
+  "name": "guildwars-reforged-mcp",
   "version": "1.3.8",
-  "description": "Read-only MCP server for Guild Wars 1 public sources and opt-in local inventory.",
+  "description": "Read-only MCP server for Guild Wars Reforged (Guild Wars 1) public sources and opt-in local inventory.",
   "type": "module",
   "main": "dist/server.js",
   "types": "dist/server.d.ts",
@@ -13,7 +13,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "guildwars1-mcp": "dist/index.js"
+    "guildwars-reforged-mcp": "dist/index.js"
   },
   "files": [
     "dist",
@@ -35,6 +35,12 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
+    "guild-wars-reforged",
+    "gw-reforged",
+    "reforged",
+    "arenanet",
+    "tyria",
+    "mmorpg",
     "guild-wars",
     "guild-wars-1",
     "gw1",

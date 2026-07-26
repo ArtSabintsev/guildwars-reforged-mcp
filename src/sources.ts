@@ -33,7 +33,7 @@ export const WIKI_SOURCES: Record<WikiSourceId, WikiSource> = {
 
 export const SOURCE_SCOPE = {
   game: "Guild Wars 1",
-  server: "guildwars1-mcp",
+  server: "guildwars-reforged-mcp",
   defaultBehavior: "Public read-only sources only. Local inventory requires explicit roots."
 };
 

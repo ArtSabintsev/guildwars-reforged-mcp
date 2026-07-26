@@ -29,7 +29,7 @@ const PACKAGE_VERSION = JSON.parse(
 ).version;
 const UA = {
   headers: {
-    "user-agent": `guildwars1-mcp/${PACKAGE_VERSION} (+https://github.com/ArtSabintsev/guildwars1-mcp)`,
+    "user-agent": `guildwars-reforged-mcp/${PACKAGE_VERSION} (+https://github.com/ArtSabintsev/guildwars-reforged-mcp)`,
   },
 };
 

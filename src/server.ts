@@ -60,7 +60,7 @@ async function searchAllWikis(source: WikiSourceId | "both", query: string, limi
 
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "guildwars1-mcp",
+    name: "guildwars-reforged-mcp",
     version: PACKAGE_VERSION
   });
 

@@ -24,7 +24,7 @@ export const PACKAGE_VERSION = packageJson.version;
 // identify the client and provide a contact URL for the maintainers.
 // Duplicated in scripts/build-skill-index.mjs, which must run pre-build and
 // so can't import this module — keep the two in sync.
-export const USER_AGENT = `guildwars1-mcp/${PACKAGE_VERSION} (+https://github.com/ArtSabintsev/guildwars1-mcp)`;
+export const USER_AGENT = `guildwars-reforged-mcp/${PACKAGE_VERSION} (+https://github.com/ArtSabintsev/guildwars-reforged-mcp)`;
 
 type CacheEntry = {
   fetchedAt: number;

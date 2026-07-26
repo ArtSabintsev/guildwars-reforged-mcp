@@ -1,7 +1,8 @@
-# Guild Wars 1 MCP
+# Guild Wars Reforged MCP
 
-Read-only Model Context Protocol server for Guild Wars 1 public sources and opt-in
-local install inventory.
+Read-only Model Context Protocol server for **Guild Wars Reforged** (the 2025
+re-release of Guild Wars 1) public sources and opt-in local install inventory.
+Covers Prophecies, Factions, Nightfall, and Eye of the North.
 
 ## Sources
 
@@ -20,31 +21,31 @@ GitHub owner or organization that hosts this repository.
 ### Codex
 
 ```bash
-codex mcp add guildwars1 -- npx -y github:<owner>/guildwars1-mcp
+codex mcp add guildwars-reforged -- npx -y github:<owner>/guildwars-reforged-mcp
 codex mcp list
 ```
 
 With opt-in local inventory:
 
 ```bash
-codex mcp add guildwars1 \
+codex mcp add guildwars-reforged \
   --env GW1_LOCAL_ROOTS="/path/to/Guild Wars/or VM.vmwarevm" \
-  -- npx -y github:<owner>/guildwars1-mcp
+  -- npx -y github:<owner>/guildwars-reforged-mcp
 ```
 
 ### Claude Code
 
 ```bash
-claude mcp add --scope user guildwars1 -- npx -y github:<owner>/guildwars1-mcp
+claude mcp add --scope user guildwars-reforged -- npx -y github:<owner>/guildwars-reforged-mcp
 claude mcp list
 ```
 
 With opt-in local inventory:
 
 ```bash
-claude mcp add --scope user guildwars1 \
+claude mcp add --scope user guildwars-reforged \
   -e GW1_LOCAL_ROOTS="/path/to/Guild Wars/or VM.vmwarevm" \
-  -- npx -y github:<owner>/guildwars1-mcp
+  -- npx -y github:<owner>/guildwars-reforged-mcp
 ```
 
 ### Claude Desktop
@@ -54,9 +55,9 @@ Merge this into `~/Library/Application Support/Claude/claude_desktop_config.json
 ```json
 {
   "mcpServers": {
-    "guildwars1": {
+    "guildwars-reforged": {
       "command": "npx",
-      "args": ["-y", "github:<owner>/guildwars1-mcp"]
+      "args": ["-y", "github:<owner>/guildwars-reforged-mcp"]
     }
   }
 }
@@ -67,9 +68,9 @@ With opt-in local inventory:
 ```json
 {
   "mcpServers": {
-    "guildwars1": {
+    "guildwars-reforged": {
       "command": "npx",
-      "args": ["-y", "github:<owner>/guildwars1-mcp"],
+      "args": ["-y", "github:<owner>/guildwars-reforged-mcp"],
       "env": {
         "GW1_LOCAL_ROOTS": "/path/to/Guild Wars/or VM.vmwarevm"
       }
@@ -83,7 +84,7 @@ Restart Claude Desktop after changing the file.
 ### Grok
 
 ```bash
-grok mcp add --scope user guildwars1 -- npx -y github:<owner>/guildwars1-mcp
+grok mcp add --scope user guildwars-reforged -- npx -y github:<owner>/guildwars-reforged-mcp
 grok mcp list
 grok mcp doctor
 ```
@@ -91,9 +92,9 @@ grok mcp doctor
 With opt-in local inventory:
 
 ```bash
-grok mcp add --scope user guildwars1 \
+grok mcp add --scope user guildwars-reforged \
   -e GW1_LOCAL_ROOTS="/path/to/Guild Wars/or VM.vmwarevm" \
-  -- npx -y github:<owner>/guildwars1-mcp
+  -- npx -y github:<owner>/guildwars-reforged-mcp
 ```
 
 Start a new Codex, Claude, or Grok session after adding the server. Existing
@@ -131,11 +132,24 @@ node dist/index.js
 
 ## Update Pipeline
 
-Most content is fetched fresh at tool-call time from public APIs and feeds. The
-repo also includes a scheduled `Source Smoke` GitHub Actions workflow that runs
-live checks against the public source surfaces. It does not commit scraped data
-or publish artifacts; it catches dead feeds, API shape changes, and source
-breakage so the curated registry can be updated intentionally.
+Most content is fetched fresh at tool-call time from public APIs and feeds, so
+the server does not go stale between commits. Three scheduled workflows keep the
+rest current without manual upkeep:
+
+- `Source Smoke` (Tue/Fri) runs live checks against every public source surface.
+  It commits nothing; it catches dead feeds, API shape changes, and source
+  breakage.
+- `Refresh skill index` (Mondays) re-extracts the bundled skill index from the
+  Guild Wars Wiki and commits it only when the extracted data actually changed.
+  Because installs resolve `github:<owner>/guildwars-reforged-mcp` to the
+  default branch, a refresh reaches users without needing a release.
+- `Keepalive` (Wednesdays) makes an empty commit if the repository has been
+  quiet for 45 days, so GitHub's 60-day inactivity rule never disables the
+  schedules above.
+
+Releases are cut only from human pushes to `main`. A data refresh is typically
+one or two corrected skill fields out of roughly 3,000 and does not merit a
+version of its own.
 
 ## Local Inventory
 
@@ -145,7 +159,7 @@ directories, VMware folders, or game installs by itself.
 Use explicit roots:
 
 ```bash
-GW1_LOCAL_ROOTS="/path/to/Guild Wars:/path/to/Some VM.vmwarevm" guildwars1-mcp
+GW1_LOCAL_ROOTS="/path/to/Guild Wars:/path/to/Some VM.vmwarevm" guildwars-reforged-mcp
 ```
 
 Or pass roots to the `gw1_local_inventory` tool.

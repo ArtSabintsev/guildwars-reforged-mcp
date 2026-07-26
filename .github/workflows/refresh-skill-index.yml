@@ -1,4 +1,3 @@
-# The `name:` below is referenced by release.yml's workflow_run trigger — keep in sync.
 name: Refresh skill index
 
 # Continuous extraction of the bundled Guild Wars Wiki skill index.
@@ -14,14 +13,16 @@ name: Refresh skill index
 #   - the extraction steps live in .github/actions/refresh-skill-index and run
 #     twice — a failed first attempt retries once on a fresh runner (fresh IP);
 #   - if both attempts land in a block window (script exit 99), the run skips
-#     with a warning instead of failing, and the daily cron self-heals: any
-#     open window across the week gets the refresh through.
+#     with a warning instead of failing, and the next weekly run retries.
+#     Re-run the workflow manually if a skipped week matters.
 
 on:
   schedule:
-    # Daily 07:00 UTC — frequent draws against the wiki's intermittent
-    # CI-IP block windows; an unchanged wiki makes each run a no-op.
-    - cron: "0 7 * * *"
+    # Weekly, Mondays 07:00 UTC. The wiki's skill data drifts slowly, so a
+    # weekly no-op cadence is enough; the cost is that a run lost to a 403
+    # block window (both attempts blocked -> skip) waits a full week for the
+    # next draw rather than a day.
+    - cron: "0 7 * * 1"
   workflow_dispatch:
     inputs:
       commit:

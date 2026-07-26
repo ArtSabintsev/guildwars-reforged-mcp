@@ -1,0 +1,51 @@
+name: Keepalive
+
+# GitHub disables every scheduled workflow in a repository that goes 60
+# consecutive days without commit activity, and only commits reset that timer —
+# tags, issues, and merged PRs do not. This repo is meant to run unattended, and
+# its weekly refresh commits only when the wiki data actually changed, so a
+# quiet stretch would silently disable the refresh permanently.
+#
+# This job makes an empty commit whenever main has been quiet for long enough,
+# keeping the schedules alive. It runs weekly with a 45-day threshold so a
+# skipped run still leaves a wide margin under the 60-day cutoff.
+#
+# The push uses GITHUB_TOKEN, which never retriggers `push` workflows, so a
+# keepalive commit cannot mint a release.
+
+on:
+  schedule:
+    - cron: "0 6 * * 3"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Shares release.yml's group so the push never races a release or a refresh.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Commit if main has been quiet
+        run: |
+          set -euo pipefail
+          age=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+          echo "last commit on main: ${age} days ago"
+          if [ "$age" -lt 45 ]; then
+            echo "recent activity — nothing to do"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: keepalive after ${age} quiet days"
+          git push origin HEAD:main

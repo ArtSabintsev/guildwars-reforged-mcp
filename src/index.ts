@@ -6,7 +6,7 @@ async function main(): Promise<void> {
   const server = createServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("guildwars1-mcp running on stdio");
+  console.error("guildwars-reforged-mcp running on stdio");
 }
 
 main().catch((error: unknown) => {

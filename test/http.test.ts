@@ -96,6 +96,6 @@ describe("fetchText", () => {
 
     const headers = fetchMock.mock.calls[0][1].headers as Record<string, string>;
     expect(headers["user-agent"]).toBe(USER_AGENT);
-    expect(USER_AGENT).toMatch(/^guildwars1-mcp\/\d+\.\d+\.\d+ \(\+https:/);
+    expect(USER_AGENT).toMatch(/^guildwars-reforged-mcp\/\d+\.\d+\.\d+ \(\+https:/);
   });
 });
