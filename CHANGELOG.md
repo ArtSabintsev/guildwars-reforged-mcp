@@ -6,6 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-07-26
+
 ### Added
 
 - `Keepalive` workflow: GitHub disables every scheduled workflow in a repository
