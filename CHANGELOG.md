@@ -6,6 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-08
+
 ### Added
 
 - Speedclear Wiki (`scr`) as a third MediaWiki source for high-end tactics; `source=both` now searches GWW + PvX + SCR.
