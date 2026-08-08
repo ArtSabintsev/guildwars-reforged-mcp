@@ -6,14 +6,17 @@ Covers Prophecies, Factions, Nightfall, and Eye of the North.
 
 ## Sources
 
+Listed alphabetically by name:
+
+- Guild Wars Build Creator (mobile UI, pointer-only): `https://guildwars.magical.ch/`
 - Guild Wars Wiki: `https://wiki.guildwars.com/api.php`
-- PvXwiki: `https://gwpvx.fandom.com/api.php`
-- Speedclear Wiki: `https://wiki.gwscr.com/api.php` (high-end SC tactics; niche meta)
 - GW1 Builds: `https://gw1builds.com/api/builds`
-- Pointer-only: mobile build creator (`guildwars.magical.ch`), Kamadan trade chat search (`kamadan.gwtoolbox.com`)
-- YouTube public RSS feeds for official and creator channels
+- Kamadan Trade Chat Search (pointer-only): `https://kamadan.gwtoolbox.com/`
+- Local Guild Wars install or VMware Fusion bundle metadata (opt-in roots only)
+- PvXwiki: `https://gwpvx.fandom.com/api.php`
 - r/GuildWars public Atom search
-- Local Guild Wars install or VMware Fusion bundle metadata, only when explicit roots are provided
+- Speedclear Wiki: `https://wiki.gwscr.com/api.php` (high-end SC tactics; niche meta)
+- YouTube public RSS feeds for official and creator channels
 
 ## Install
 
