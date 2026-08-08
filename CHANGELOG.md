@@ -6,6 +6,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Speedclear Wiki (`scr`) as a third MediaWiki source for high-end tactics; `source=both` now searches GWW + PvX + SCR.
+- Pointer sources for Kamadan trade chat search and the magical.ch mobile build creator.
+- `VERSIONING.md` documents conventional-commit → semver → tag → GitHub Release automation.
+
 ## [2.0.0] - 2026-07-26
 
 ### Added

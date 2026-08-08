@@ -5,7 +5,7 @@ import { getYouTubeVideos } from "./youtube.js";
 
 export type ContentSearchOptions = {
   query: string;
-  sources?: Array<"wiki" | "pvx" | "gw1builds" | "youtube" | "reddit">;
+  sources?: Array<"wiki" | "pvx" | "scr" | "gw1builds" | "youtube" | "reddit">;
   limitPerSource?: number;
   includeAuthors?: boolean;
 };
@@ -40,6 +40,9 @@ export async function searchContent(options: ContentSearchOptions): Promise<Cont
         } else if (source === "pvx") {
           const matches = await searchWiki("pvx", options.query, limitPerSource);
           results.push(...matches.map((match) => ({ source, title: match.title, url: match.url, summary: match.snippet, publishedAt: match.timestamp, sourceTitle: match.sourceTitle, kind: "build-wiki-page" })));
+        } else if (source === "scr") {
+          const matches = await searchWiki("scr", options.query, limitPerSource);
+          results.push(...matches.map((match) => ({ source, title: match.title, url: match.url, summary: match.snippet, publishedAt: match.timestamp, sourceTitle: match.sourceTitle, kind: "speedclear-wiki-page" })));
         } else if (source === "gw1builds") {
           const search = await searchGw1Builds({ query: options.query, limit: limitPerSource, includeAuthors: options.includeAuthors ?? false });
           results.push(...search.results.map((build) => ({ source, title: build.name, url: build.url, summary: build.tags.join(", "), publishedAt: build.createdAt, sourceTitle: "GW1 Builds", kind: "build" })));

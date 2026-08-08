@@ -8,7 +8,9 @@ Covers Prophecies, Factions, Nightfall, and Eye of the North.
 
 - Guild Wars Wiki: `https://wiki.guildwars.com/api.php`
 - PvXwiki: `https://gwpvx.fandom.com/api.php`
+- Speedclear Wiki: `https://wiki.gwscr.com/api.php` (high-end SC tactics; niche meta)
 - GW1 Builds: `https://gw1builds.com/api/builds`
+- Pointer-only: mobile build creator (`guildwars.magical.ch`), Kamadan trade chat search (`kamadan.gwtoolbox.com`)
 - YouTube public RSS feeds for official and creator channels
 - r/GuildWars public Atom search
 - Local Guild Wars install or VMware Fusion bundle metadata, only when explicit roots are provided

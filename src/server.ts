@@ -9,7 +9,7 @@ import { inventoryLocal } from "./local.js";
 import { getGameUpdateSections, getRecentChanges, getWikiPage, searchWiki, type WikiSearchResult } from "./mediawiki.js";
 import { searchGuildWarsSubreddit } from "./reddit.js";
 import { SKILL_INDEX_PROVENANCE } from "./skills.generated.js";
-import { PUBLIC_SOURCES, SOURCE_SCOPE, WIKI_SOURCES, type WikiSourceId } from "./sources.js";
+import { ALL_WIKI_SOURCE_IDS, PUBLIC_SOURCES, SOURCE_SCOPE, WIKI_SOURCES, type WikiSourceId } from "./sources.js";
 import { analyzeTemplateCode } from "./template.js";
 import { getYouTubeVideos, listYouTubeSources, YOUTUBE_SOURCES } from "./youtube.js";
 
@@ -25,12 +25,12 @@ function toolResult(summary: string, structuredContent: Record<string, unknown>)
   };
 }
 
-const wikiSourceSchema = z.enum(["gww", "pvx"]);
-const wikiSourceOrBothSchema = z.enum(["gww", "pvx", "both"]);
+const wikiSourceSchema = z.enum(["gww", "pvx", "scr"]);
+const wikiSourceOrBothSchema = z.enum(["gww", "pvx", "scr", "both"]);
 
 async function searchAllWikis(source: WikiSourceId | "both", query: string, limit: number) {
-  const perSourceLimit = source === "both" ? Math.ceil(limit / 2) : limit;
-  const sourceIds: WikiSourceId[] = source === "both" ? ["gww", "pvx"] : [source];
+  const sourceIds: WikiSourceId[] = source === "both" ? [...ALL_WIKI_SOURCE_IDS] : [source];
+  const perSourceLimit = source === "both" ? Math.max(1, Math.ceil(limit / sourceIds.length)) : limit;
   const settled = await Promise.allSettled(sourceIds.map((sourceId) => searchWiki(sourceId, query, perSourceLimit)));
 
   const results: WikiSearchResult[] = [];
@@ -363,7 +363,7 @@ export function createServer(): McpServer {
       description: "Search across Guild Wars Wiki, PvXwiki, GW1 Builds, YouTube, and r/GuildWars for current public content.",
       inputSchema: {
         query: z.string().min(2).max(160),
-        sources: z.array(z.enum(["wiki", "pvx", "gw1builds", "youtube", "reddit"])).optional(),
+        sources: z.array(z.enum(["wiki", "pvx", "scr", "gw1builds", "youtube", "reddit"])).optional(),
         limitPerSource: z.number().int().min(1).max(20).default(5),
         includeAuthors: z.boolean().default(false)
       }

@@ -1,4 +1,4 @@
-export type WikiSourceId = "gww" | "pvx";
+export type WikiSourceId = "gww" | "pvx" | "scr";
 
 export type WikiSource = {
   id: WikiSourceId;
@@ -6,7 +6,7 @@ export type WikiSource = {
   apiUrl: string;
   webUrl: string;
   pageUrlPrefix: string;
-  authority: "primary-community" | "build-community";
+  authority: "primary-community" | "build-community" | "speedclear-community";
   notes: string[];
 };
 
@@ -28,8 +28,23 @@ export const WIKI_SOURCES: Record<WikiSourceId, WikiSource> = {
     pageUrlPrefix: "https://gwpvx.fandom.com/wiki/",
     authority: "build-community",
     notes: ["Fandom-hosted build archive.", "Preferred source for historical and maintained PvE, PvP, farming, and team build pages."]
+  },
+  scr: {
+    id: "scr",
+    title: "Speedclear Wiki",
+    apiUrl: "https://wiki.gwscr.com/api.php",
+    webUrl: "https://wiki.gwscr.com/",
+    pageUrlPrefix: "https://wiki.gwscr.com/wiki/",
+    authority: "speedclear-community",
+    notes: [
+      "Community wiki for high-end speedclear tactics (DoA, UW, FoW, etc.).",
+      "Niche meta — not a general-play authority; prefer Guild Wars Wiki for skills/quests and PvX for general builds."
+    ]
   }
 };
+
+/** All wiki source ids in default search order (general → builds → speedclear). */
+export const ALL_WIKI_SOURCE_IDS = Object.keys(WIKI_SOURCES) as WikiSourceId[];
 
 export const SOURCE_SCOPE = {
   game: "Guild Wars 1",
@@ -55,12 +70,43 @@ export const PUBLIC_SOURCES = [
     authority: WIKI_SOURCES.pvx.authority
   },
   {
+    id: "speedclear-wiki",
+    title: "Speedclear Wiki",
+    kind: "mediawiki",
+    url: WIKI_SOURCES.scr.webUrl,
+    apiUrl: WIKI_SOURCES.scr.apiUrl,
+    authority: WIKI_SOURCES.scr.authority,
+    notes: WIKI_SOURCES.scr.notes
+  },
+  {
     id: "gw1builds",
     title: "GW1 Builds",
     kind: "public-build-api",
     url: "https://gw1builds.com/",
     apiUrl: "https://gw1builds.com/api/builds",
     authority: "community-builds"
+  },
+  {
+    id: "gw-build-creator-mobile",
+    title: "Guild Wars Build Creator (magical.ch)",
+    kind: "public-build-ui",
+    url: "https://guildwars.magical.ch/",
+    authority: "community-builds",
+    notes: [
+      "Mobile-friendly template builder UI.",
+      "Pointer-only — overlaps gw1builds + template encode/decode tools; no public search API."
+    ]
+  },
+  {
+    id: "kamadan-trade",
+    title: "Kamadan Trade Chat Search",
+    kind: "public-trade-ui",
+    url: "https://kamadan.gwtoolbox.com/",
+    authority: "community-economy",
+    notes: [
+      "Live/near-live Kamadan trade chat search from GWToolbox.",
+      "Economy surface, not skill or build truth. Pointer-only; no structured public API in this MCP."
+    ]
   },
   {
     id: "guildwars-subreddit",
