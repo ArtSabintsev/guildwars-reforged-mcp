@@ -6,6 +6,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Parse Guild Wars Wiki game-update headings in the live extract shape
+  (`Update - September 1, 2026`) so `gw1_game_updates` and Source Smoke no
+  longer report zero sections.
+
 ## [2.1.1] - 2026-08-08
 
 ### Changed

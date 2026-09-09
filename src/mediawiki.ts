@@ -249,25 +249,51 @@ export type GameUpdateSection = {
   text: string;
 };
 
-export async function getGameUpdateSections(limit: number, maxCharactersPerSection = 3000): Promise<GameUpdateSection[]> {
-  const page = await getWikiPage("gww", "Game updates", 40_000, { cacheTtlMs: FAST_MOVING_TTL_MS });
+// Full month names as used on Guild Wars Wiki update pages. Matching a dated
+// heading (not merely a line that starts with "Update") keeps subsection titles
+// such as "Skill updates" from being treated as top-level game-update sections.
+const GAME_UPDATE_MONTH =
+  "January|February|March|April|May|June|July|August|September|October|November|December";
+
+// Live MediaWiki extracts (explaintext + exsectionformat=plain) render
+// transcluded update headings as a bare line: "Update - September 1, 2026".
+// Older wiki-markup extracts still use "== Update June 25, 2026 ==". Allow an
+// optional dash/colon between "Update" and the date, plus day-first dates.
+const GAME_UPDATE_HEADING = new RegExp(
+  String.raw`^(?:==\s*)?(Update(?:\s*[-–—:])?\s*(?:(?:${GAME_UPDATE_MONTH})\s+\d{1,2}(?:st|nd|rd|th)?|\d{1,2}(?:st|nd|rd|th)?\s+(?:${GAME_UPDATE_MONTH})),?\s+\d{4})(?:\s*==)?\s*$`,
+  "gim"
+);
+
+const UPDATE_HEADING_PREFIX = /^Update(?:\s*[-–—:])?\s*/i;
+
+export function parseGameUpdateSectionsFromExtract(
+  extract: string,
+  pageUrl: string,
+  limit: number,
+  maxCharactersPerSection: number
+): GameUpdateSection[] {
+  const pattern = new RegExp(GAME_UPDATE_HEADING.source, GAME_UPDATE_HEADING.flags);
+  const matches = [...extract.matchAll(pattern)];
   const sections: GameUpdateSection[] = [];
-  const pattern = /^(?:==\s*)?(Update [A-Z][^=\n]+?)(?:\s*==)?\s*$/gm;
-  const matches = [...page.extract.matchAll(pattern)];
 
   for (let index = 0; index < matches.length && sections.length < limit; index += 1) {
     const match = matches[index];
     const next = matches[index + 1];
     const start = match.index === undefined ? 0 : match.index + match[0].length;
-    const end = next?.index ?? page.extract.length;
+    const end = next?.index ?? extract.length;
     const heading = match[1].trim();
     sections.push({
       heading,
-      dateText: heading.replace(/^Update\s+/, ""),
-      url: `${page.url}#${encodeURIComponent(heading.replaceAll(" ", "_"))}`,
-      text: truncateText(page.extract.slice(start, end).trim(), maxCharactersPerSection)
+      dateText: heading.replace(UPDATE_HEADING_PREFIX, ""),
+      url: `${pageUrl}#${encodeURIComponent(heading.replaceAll(" ", "_"))}`,
+      text: truncateText(extract.slice(start, end).trim(), maxCharactersPerSection)
     });
   }
 
   return sections;
+}
+
+export async function getGameUpdateSections(limit: number, maxCharactersPerSection = 3000): Promise<GameUpdateSection[]> {
+  const page = await getWikiPage("gww", "Game updates", 40_000, { cacheTtlMs: FAST_MOVING_TTL_MS });
+  return parseGameUpdateSectionsFromExtract(page.extract, page.url, limit, maxCharactersPerSection);
 }

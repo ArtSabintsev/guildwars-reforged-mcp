@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchJson } from "../src/http.js";
-import { getGameUpdateSections, getRecentChanges, getWikiPage, searchWiki } from "../src/mediawiki.js";
+import { getGameUpdateSections, getRecentChanges, getWikiPage, parseGameUpdateSectionsFromExtract, searchWiki } from "../src/mediawiki.js";
 
 vi.mock("../src/http.js", () => ({
   fetchJson: vi.fn()
@@ -75,7 +75,7 @@ describe("MediaWiki client", () => {
     expect(JSON.stringify(changes)).not.toContain("user");
   });
 
-  it("parses game update sections", async () => {
+  it("parses wiki-markup game update sections", async () => {
     mockedFetchJson.mockResolvedValue({
       query: {
         pages: {
@@ -92,7 +92,66 @@ describe("MediaWiki client", () => {
     const updates = await getGameUpdateSections(2);
 
     expect(updates.map((update) => update.heading)).toEqual(["Update June 25, 2026", "Update June 24, 2026"]);
+    expect(updates[0]?.dateText).toBe("June 25, 2026");
     expect(updates[0]?.text).toBe("Fixed pets.");
+  });
+
+  it("parses hyphenated plain-extract headings used on the live Game updates page", () => {
+    const extract = [
+      "This list contains all recent updates as published by ArenaNet.",
+      "",
+      "Update - September 1, 2026",
+      "",
+      "Skill updates",
+      " Mirage Cloak: Adjust additional block chance.",
+      "",
+      "Guild Wars Wiki notes",
+      "Build: 38,888",
+      "",
+      "Update - August 27, 2026",
+      "The Purveyor can no longer be summoned while enemies are nearby",
+      "",
+      "See also"
+    ].join("\n");
+
+    const updates = parseGameUpdateSectionsFromExtract(extract, "https://wiki.guildwars.com/wiki/Game_updates", 5, 3000);
+
+    expect(updates.map((update) => update.heading)).toEqual([
+      "Update - September 1, 2026",
+      "Update - August 27, 2026"
+    ]);
+    expect(updates[0]?.dateText).toBe("September 1, 2026");
+    expect(updates[0]?.text).toContain("Mirage Cloak");
+    expect(updates[0]?.text).not.toContain("The Purveyor");
+    expect(updates[1]?.text).toContain("The Purveyor");
+  });
+
+  it("accepts dash, colon, day-first, and ordinal date variants without matching subsection titles", () => {
+    const extract = [
+      "Update – 1st September 2026",
+      "Hotfix notes.",
+      "Update: October 2nd, 2026",
+      "Balance pass.",
+      "Skill updates",
+      "Not a dated section.",
+      "Update notes for later",
+      "Still not a dated section."
+    ].join("\n");
+
+    const updates = parseGameUpdateSectionsFromExtract(extract, "https://wiki.guildwars.com/wiki/Game_updates", 10, 3000);
+
+    expect(updates.map((update) => ({ heading: update.heading, dateText: update.dateText }))).toEqual([
+      { heading: "Update – 1st September 2026", dateText: "1st September 2026" },
+      { heading: "Update: October 2nd, 2026", dateText: "October 2nd, 2026" }
+    ]);
+  });
+
+  it("honors the section limit on hyphenated extracts", () => {
+    const extract = "Update - September 1, 2026\nOne.\n\nUpdate - August 27, 2026\nTwo.\n";
+    const updates = parseGameUpdateSectionsFromExtract(extract, "https://wiki.guildwars.com/wiki/Game_updates", 1, 3000);
+
+    expect(updates).toHaveLength(1);
+    expect(updates[0]?.heading).toBe("Update - September 1, 2026");
   });
 
   it("surfaces MediaWiki API errors instead of returning empty results", async () => {
