@@ -3,6 +3,7 @@ import { searchGw1Builds } from "../dist/gw1builds.js";
 import { searchGuildWarsSubreddit } from "../dist/reddit.js";
 import { getYouTubeVideos, listYouTubeSources } from "../dist/youtube.js";
 import { searchContent } from "../dist/content.js";
+import { allFailuresAreHostedRunnerBlocks } from "./source-smoke-policy.mjs";
 
 const checks = [];
 
@@ -61,16 +62,15 @@ if (failures.length === 0) {
   process.exit(0);
 }
 
-// The wiki's AWS load balancer intermittently 403s hosted-CI egress IPs in
-// block windows lasting minutes to hours (all endpoints at once). Such a 403
-// is purely IP-based and external — a code regression surfaces as a different
-// error (parse failure, 404, timeout), never an awselb 403. When every failure
-// is a wiki 403, exit 99 so the workflow can tell "upstream is blocking this
-// runner right now" apart from a genuine source regression, mirroring
-// scripts/build-skill-index.mjs and .github/actions/refresh-skill-index.
-const isWikiBlock = (entry) => /wiki\.guildwars\.com/.test(entry.error ?? "") && /HTTP 403\b/.test(entry.error ?? "");
-if (failures.every(isWikiBlock)) {
-  console.error("wiki.guildwars.com returned 403 for every wiki check — upstream is blocking this network; exiting 99");
+// wiki.guildwars.com and reddit.com intermittently 403 hosted-CI egress IPs
+// (wiki: AWS ELB block windows; reddit: GitHub Actions / Azure datacenter
+// IPs). Those 403s are purely IP-based and external — a code regression
+// surfaces as a different error (parse failure, empty 200, 404, timeout).
+// When every failure is one of those 403s, exit 99 so the workflow can tell
+// "upstream is blocking this runner right now" apart from a genuine source
+// regression, mirroring scripts/build-skill-index.mjs.
+if (allFailuresAreHostedRunnerBlocks(failures)) {
+  console.error("wiki.guildwars.com and/or reddit.com returned 403 — upstream is blocking this network; exiting 99");
   process.exit(99);
 }
 

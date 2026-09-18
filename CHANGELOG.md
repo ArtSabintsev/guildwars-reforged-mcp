@@ -6,6 +6,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Source Smoke treats Reddit HTTP 403 from hosted-runner IPs as a transient
+  upstream block (exit 99), matching the existing wiki 403 policy, so the
+  scheduled run no longer reds when Reddit blocks GitHub Actions egress.
+  Parse failures, empty 200s, and non-403 Reddit errors still fail the smoke.
+
 ## [2.1.2] - 2026-09-09
 
 ### Fixed

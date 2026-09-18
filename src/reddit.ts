@@ -35,6 +35,9 @@ export async function searchGuildWarsSubreddit(options: SubredditSearchOptions):
     limit: String(limit)
   });
   const url = `https://www.reddit.com/r/GuildWars/search.rss?${params.toString()}`;
+  // search.rss is the remaining logged-out search surface. Datacenter
+  // egress (GitHub-hosted runners) often gets HTTP 403; Source Smoke
+  // classifies that as an upstream IP block, not a parser regression.
   const xml = await fetchText(url, { accept: "application/atom+xml,text/xml;q=0.9,*/*;q=0.8" });
 
   return {
