@@ -6,6 +6,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [2.1.3] - 2026-09-18
+
 ### Fixed
 
 - Source Smoke treats Reddit HTTP 403 from hosted-runner IPs as a transient
